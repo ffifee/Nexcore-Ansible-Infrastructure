@@ -1,0 +1,6 @@
+---
+# handlers file for logging_client
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted

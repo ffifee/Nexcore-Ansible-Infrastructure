@@ -1,0 +1,78 @@
+---
+nexcore_users:
+  - name: ops01
+    group: ops
+    sudo: true
+  - name: dev01
+    group: dev
+    sudo: false
+  - name: dev02
+    group: dev
+    sudo: false
+  - name: mkt01
+    group: marketing
+    sudo: false
+
+domain: nexcore.local
+
+dns_a_records:
+  - { name: servera, host: servera }
+  - { name: serverb, host: serverb }
+  - { name: www, host: servera }
+  - { name: wiki,    host: servera }
+
+dns_mx_host: servera
+
+dns_server_ip: "{{ hostvars['servera']['servera_ip'] }}"
+
+storage_mount: /mnt/shared
+nfs_users_dir: "{{ storage_mount }}/users"
+nfs_server: serverb.nexcore.local
+
+wiki_db_password: wikiPass123
+wp_db_password: wpPass123
+mysql_root_password: rootPass123
+
+databases:
+  - name: wiki_db
+    user: wiki_user
+    password: "{{ wiki_db_password }}"
+    host: "{{ hostvars['servera']['servera_ip'] }}"
+  - name: wordpress_db
+    user: wp_user
+    password: "{{ wp_db_password }}"
+    host: "{{ hostvars['servera']['servera_ip'] }}"
+
+web_sites:
+  - name: wiki
+    servername: "wiki.{{ domain }}"
+    docroot: /var/www/wiki
+  - name: wordpress
+    servername: "www.{{ domain }}"
+    docroot: /var/www/wordpress
+
+wordpress_db_name: wordpress_db
+wordpress_db_user: wp_user
+wordpress_db_host: serverb.nexcore.local
+
+wordpress_salt: |
+  define( 'AUTH_KEY',         'h= 4&~echIdN{:F0JzLz~h[`LIY-I1->j-50u%i-Z<JdE4D5H#)1YMJi0Q8eyc-K' );
+  define( 'SECURE_AUTH_KEY',  ']C9h`4u4BJg|D6^.1C+lpJq#0-6&r40#IA@j,S)UBGHr=/8g7 8.]_)O(]n_H1bW' );
+  define( 'LOGGED_IN_KEY',    'vYbwm1YhI@{OL>T#+WS[}fm>]-u]{}o(,t;XUi?k+N$c-6(n|Z+(daKMN+H43)Rm' );
+  define( 'NONCE_KEY',        '^YUOp+iqC89ox(~Exq zz7{t~&Aek[[Z%*]/:VIVtzr2gka}YSR(!JaUE~H2<cVl' );
+  define( 'AUTH_SALT',        ' +EN:Dks14S`x%Sfvq0)]zNX]b2^L}<8LWYWttG!ngwR jrQ}>D,j>XAr}Eq/QhD' );
+  define( 'SECURE_AUTH_SALT', 'j}4aju5ZpxC&P{AM=$p<H*b/Qj]UNk/3CqCI`9+:[{`yZ|i9>s&%tb9F[q5a:zuD' );
+  define( 'LOGGED_IN_SALT',   'C{vcbkq9B<!UXAtPRuaZ>6#C72)K1J@V@(s7ffyTyc.,Fy,T9]Z~`ZWdT![Y=0S`' );
+  define( 'NONCE_SALT',       '*Ptwsa:W;.ou#A?yq#lAH-UpH n8dw5BeHb^XF#|f%QUx=3][_QM7+o ()9u.4K-' );
+
+mediawiki_version_major: "1.39"
+mediawiki_version: "1.39.17"
+mediawiki_docroot: /var/www/wiki
+
+wiki_db_name: wiki_db
+wiki_db_user: wiki_user
+wiki_db_host: serverb.nexcore.local
+
+log_remote_port: 514
+log_remote_dir: /var/log/remote
+log_server_ip: "{{ hostvars['servera']['servera_ip'] }}"

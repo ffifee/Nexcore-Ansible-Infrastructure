@@ -1,0 +1,5 @@
+# Forward all logs to the central log server over TCP
+*.* action(type="omfwd"
+           target="{{ log_server_ip }}"
+           port="{{ log_remote_port }}"
+           protocol="tcp")

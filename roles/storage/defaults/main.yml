@@ -1,0 +1,15 @@
+---
+# defaults file for storage
+storage_vg: vg_shared
+storage_lv: lv_shared
+storage_fs: xfs
+storage_group: dev
+storage_mode: '2770'
+
+nfs_export_network: 192.168.1.0/24
+nfs_mode: '0755'
+nfs_exports_template: nfs-exports.j2
+nfs_exports_dest: /etc/exports
+nfs_exports_owner: root
+nfs_exports_group: root
+nfs_exports_mode: '0644'

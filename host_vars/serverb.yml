@@ -1,0 +1,2 @@
+serverb_ip: 192.168.1.12
+shared_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1

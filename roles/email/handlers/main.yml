@@ -1,0 +1,6 @@
+---
+# handlers file for email
+- name: Restart postfix
+  ansible.builtin.service:
+    name: "{{ postfix_service }}"
+    state: restarted

@@ -1,0 +1,11 @@
+#!/bin/bash
+# NexCore nightly database backup
+BACKUP_DIR="{{ backup_dir }}"
+STAMP=$(date +%F)
+OUTFILE="${BACKUP_DIR}/nexcore-db-${STAMP}.sql.gz"
+
+# Dump all databases (root via unix socket, no password needed)
+mysqldump --all-databases --single-transaction | gzip > "${OUTFILE}"
+
+# Remove backups older than retention period
+find "${BACKUP_DIR}" -name "nexcore-db-*.sql.gz" -mtime +{{ backup_retention_days }} -delete

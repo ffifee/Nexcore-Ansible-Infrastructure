@@ -1,0 +1,10 @@
+---
+# defaults file for dns
+dns_package: bind
+dns_service: named
+dns_zone_dir: /var/named
+dns_zone_ttl: 86400
+dns_zone_serial: 2026011501
+dns_forwarders:
+  - 8.8.8.8
+  - 1.1.1.1

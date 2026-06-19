@@ -1,0 +1,21 @@
+---
+# defaults file for web
+web_packages:
+  - httpd
+  - php
+  - php-mysqlnd
+  - php-gd
+  - php-xml
+  - php-mbstring
+  - php-json
+  - php-intl
+  - mariadb
+
+web_service: httpd
+
+web_firewall_services:
+  - http
+  - https
+
+wordpress_url: https://wordpress.org/latest.tar.gz
+wordpress_docroot: /var/www/wordpress

@@ -1,0 +1,6 @@
+---
+# handlers file for dns_client
+- name: Reload NetworkManager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: reloaded

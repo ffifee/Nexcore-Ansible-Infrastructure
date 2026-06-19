@@ -1,0 +1,8 @@
+---
+# defaults file for automount
+automount_master_map: company_share.autofs.j2
+automount_master_map_dest: /etc/auto.master.d/company_share.autofs
+
+
+automount_map_file: auto.company_share.j2
+automount_map_file_dest: /etc/auto.company_share  

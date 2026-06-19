@@ -1,0 +1,4 @@
+---
+# defaults file for security
+ssh_password_authentication: "no"
+selinux_state: enforcing

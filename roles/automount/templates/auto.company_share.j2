@@ -1,0 +1,3 @@
+{% for user in nexcore_users %}
+/home/{{ user.name }}/Company_Share -fstype=nfs4,rw {{ nfs_server }}:{{ nfs_users_dir }}/{{ user.name }}
+{% endfor %}

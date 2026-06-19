@@ -1,0 +1,56 @@
+---
+# tasks file for patching
+- name: Deploy health check script
+  ansible.builtin.template:
+    src: nexcore-health.sh.j2
+    dest: "{{ health_script }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy patching script
+  ansible.builtin.template:
+    src: nexcore-patch.sh.j2
+    dest: "{{ patch_script }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure health log exists
+  ansible.builtin.file:
+    path: "{{ health_log }}"
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+  changed_when: false
+
+- name: Schedule daily health check
+  ansible.builtin.cron:
+    name: "NexCore daily health check"
+    minute: "{{ health_cron_minute }}"
+    hour: "{{ health_cron_hour }}"
+    job: "{{ health_script }}"
+
+- name: Schedule weekly package cache cleanup
+  ansible.builtin.cron:
+    name: "NexCore weekly cache cleanup"
+    minute: "{{ cache_cron_minute }}"
+    hour: "{{ cache_cron_hour }}"
+    weekday: "{{ cache_cron_weekday }}"
+    job: "dnf clean all"
+
+- name: Schedule daily patching
+  ansible.builtin.cron:
+    name: "NexCore daily patching"
+    minute: "{{ patch_cron_minute }}"
+    hour: "{{ patch_cron_hour }}"
+    job: "{{ patch_script }}"
+
+- name: Deploy logrotate config for health log
+  ansible.builtin.template:
+    src: nexcore-health-logrotate.j2
+    dest: /etc/logrotate.d/nexcore-health
+    owner: root
+    group: root
+    mode: '0644'

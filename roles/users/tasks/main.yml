@@ -1,0 +1,32 @@
+---
+- name: Ensure groups exist
+  ansible.builtin.group:
+    name: "{{ item.group }}"
+    state: present
+  loop: "{{ nexcore_users }}"
+
+- name: Ensure users exist
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.group }}"
+    append: yes
+    state: present
+    shell: /bin/bash
+    create_home: yes
+  loop: "{{ nexcore_users }}"
+
+- name: Ensure sudo privileges
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL\n"
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  loop: "{{ nexcore_users }}"
+  when: item.sudo
+
+- name: Deploy SSH public keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', 'roles/users/files/' + item.name + '.pub') }}"
+    state: present
+  loop: "{{ nexcore_users }}"

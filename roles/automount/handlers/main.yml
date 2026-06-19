@@ -1,0 +1,6 @@
+---
+# handlers file for automount
+- name: Restart autofs
+  ansible.builtin.service:
+    name: autofs
+    state: restarted

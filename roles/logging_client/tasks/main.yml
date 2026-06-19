@@ -1,0 +1,10 @@
+---
+# tasks file for logging_client
+- name: Deploy rsyslog client config
+  ansible.builtin.template:
+    src: client.conf.j2
+    dest: /etc/rsyslog.d/90-forward.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart rsyslog

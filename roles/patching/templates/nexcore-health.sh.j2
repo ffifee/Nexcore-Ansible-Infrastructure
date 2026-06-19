@@ -1,0 +1,14 @@
+#!/bin/bash
+# NexCore daily health check
+LOG="{{ health_log }}"
+{
+    echo "===== Health check: $(date) ====="
+    echo "Hostname: $(hostname)"
+    echo "Uptime: $(uptime -p)"
+    echo "Disk usage:"
+    df -h /
+    echo ""
+} >> "$LOG"
+
+# Email a summary to ops on completion
+tail -n 7 "$LOG" | mail -s "Health check on $(hostname)" {{ health_email }}

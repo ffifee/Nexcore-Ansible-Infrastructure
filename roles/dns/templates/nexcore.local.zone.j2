@@ -1,0 +1,19 @@
+$TTL {{ dns_zone_ttl }}
+@   IN  SOA {{ dns_mx_host }}.{{ domain }}. root.{{ domain }}. (
+    {{ dns_zone_serial }} ; Serial
+    3600       ; Refresh
+    1800       ; Retry
+    604800     ; Expire
+    86400      ; Minimum TTL
+)
+
+; Name servers
+@   IN  NS  {{ dns_mx_host }}.{{ domain }}.
+
+; Mail servers
+@   IN  MX  10 {{ dns_mx_host }}.{{ domain }}.
+
+; A records for hosts
+{% for host in dns_a_records %}
+{{ host.name }}   IN  A   {{ hostvars[host.host][host.host + '_ip'] }}
+{% endfor %}

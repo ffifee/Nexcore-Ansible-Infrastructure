@@ -1,0 +1,4 @@
+---
+# handlers file for storage
+- name: Reload NFS exports
+  ansible.builtin.command: exportfs -ra

@@ -1,0 +1,108 @@
+---
+# tasks file for web
+- name: Install web stack packages
+  ansible.builtin.dnf:
+    name: "{{ web_packages }}"
+    state: present
+
+- name: Ensure httpd is running and enabled
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: started
+    enabled: true
+
+- name: Create web document roots
+  ansible.builtin.file:
+    path: "{{ item.docroot }}"
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+  loop: "{{ web_sites }}"
+
+- name: Deploy virtual host configs
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "/etc/httpd/conf.d/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ web_sites }}"
+  notify: Restart httpd
+
+- name: Set SELinux context rule for web directories
+  community.general.sefcontext:
+    target: "{{ item.docroot }}(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+  loop: "{{ web_sites }}"
+
+- name: Apply SELinux context to web directories
+  ansible.builtin.command: "restorecon -Rv {{ item.docroot }}"
+  loop: "{{ web_sites }}"
+  register: restorecon_result
+  changed_when: "restorecon_result.stdout | length > 0"
+
+- name: Allow httpd to connect to database over network
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect_db
+    state: true
+    persistent: true
+
+- name: Open web ports in firewall
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ web_firewall_services }}"
+
+- name: Download WordPress
+  ansible.builtin.get_url:
+    url: "{{ wordpress_url }}"
+    dest: /tmp/wordpress.tar.gz
+    mode: '0644'
+
+- name: Extract WordPress
+  ansible.builtin.unarchive:
+    src: /tmp/wordpress.tar.gz
+    dest: "{{ wordpress_docroot }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ wordpress_docroot }}/wp-settings.php"
+    owner: apache
+    group: apache
+
+- name: Deploy wp-config.php
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: "{{ wordpress_docroot }}/wp-config.php"
+    owner: apache
+    group: apache
+    mode: '0640'
+  notify: Restart httpd
+
+- name: Download MediaWiki
+  ansible.builtin.get_url:
+    url: "https://releases.wikimedia.org/mediawiki/{{ mediawiki_version_major }}/mediawiki-{{ mediawiki_version }}.tar.gz"
+    dest: /tmp/mediawiki.tar.gz
+    mode: '0644'
+
+- name: Extract MediaWiki
+  ansible.builtin.unarchive:
+    src: /tmp/mediawiki.tar.gz
+    dest: "{{ mediawiki_docroot }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ mediawiki_docroot }}/index.php"
+    owner: apache
+    group: apache
+
+- name: Deploy MediaWiki LocalSettings.php
+  ansible.builtin.template:
+    src: LocalSettings.php.j2
+    dest: "{{ mediawiki_docroot }}/LocalSettings.php"
+    owner: apache
+    group: apache
+    mode: '0640'
+  notify: Restart httpd

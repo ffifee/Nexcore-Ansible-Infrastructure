@@ -1,0 +1,20 @@
+---
+# defaults file for patching
+health_log: /var/log/nexcore-health.log
+health_script: /usr/local/bin/nexcore-health.sh
+patch_script: /usr/local/bin/nexcore-patch.sh
+
+health_email: "ops01@{{ domain }}"
+
+# Daily health check at 03:00
+health_cron_hour: "3"
+health_cron_minute: "0"
+
+# Weekly cache cleanup, Sunday 04:00
+cache_cron_weekday: "0"
+cache_cron_hour: "4"
+cache_cron_minute: "0"
+
+# Daily patching at 02:00 
+patch_cron_hour: "2"
+patch_cron_minute: "0"

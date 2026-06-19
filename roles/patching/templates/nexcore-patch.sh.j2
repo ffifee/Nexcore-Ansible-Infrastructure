@@ -1,0 +1,8 @@
+#!/bin/bash
+# NexCore automated patching
+dnf -y upgrade
+
+# Reboot only if the update requires it
+if ! dnf needs-restarting -r >/dev/null 2>&1; then
+    /usr/sbin/reboot
+fi

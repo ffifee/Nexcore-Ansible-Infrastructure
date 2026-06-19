@@ -1,0 +1,29 @@
+---
+# tasks file for email
+- name: Install Postfix and mail client
+  ansible.builtin.dnf:
+    name: "{{ postfix_packages }}"
+    state: present
+
+- name: Configure Postfix main.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: "^{{ item.key }}\\s*="
+    line: "{{ item.key }} = {{ item.value }}"
+    state: present
+  loop: "{{ postfix_settings | dict2items }}"
+  notify: Restart postfix
+
+- name: Ensure Postfix is running and enabled
+  ansible.builtin.service:
+    name: "{{ postfix_service }}"
+    state: started
+    enabled: true
+
+- name: Open SMTP port in firewall
+  ansible.posix.firewalld:
+    service: smtp
+    permanent: true
+    immediate: true
+    state: enabled
+  notify: Restart postfix

@@ -1,0 +1,32 @@
+---
+# tasks file for automount
+- name: Install autofs and NFS client utilities
+  ansible.builtin.dnf:
+    name:
+      - autofs
+      - nfs-utils
+    state: present
+
+- name: Deploy autofs master map
+  ansible.builtin.template:
+    src: "{{ automount_master_map }}"
+    dest: "{{ automount_master_map_dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart autofs
+
+- name: Deploy autofs per-user map
+  ansible.builtin.template:
+    src: "{{ automount_map_file }}"
+    dest: "{{ automount_map_file_dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart autofs
+
+- name: Ensure autofs is running and enabled
+  ansible.builtin.service:
+    name: autofs
+    state: started
+    enabled: true

@@ -1,0 +1,65 @@
+---
+# tasks file for storage
+- name: Create shared volume group
+  community.general.lvg:
+    vg: "{{ storage_vg }}"
+    pvs: "{{ shared_disk }}"
+
+- name: Create logical volume
+  community.general.lvol:
+    vg: "{{ storage_vg }}"
+    lv: "{{ storage_lv }}"
+    size: "100%FREE"
+    shrink: false
+
+- name: Create file system
+  ansible.builtin.filesystem:
+    fstype: "{{ storage_fs }}"
+    dev: "/dev/{{ storage_vg }}/{{ storage_lv }}"
+
+- name: Mount shared volume
+  ansible.posix.mount:
+    path: "{{ storage_mount }}"
+    src: "/dev/{{ storage_vg }}/{{ storage_lv }}"
+    fstype: "{{ storage_fs }}"
+    state: mounted
+
+- name: Set permissions on shared directory for dev
+  ansible.builtin.file:
+    path: "{{ storage_mount }}"
+    state: directory
+    group: "{{ storage_group }}"
+    mode: "{{ storage_mode }}"
+
+- name: Install NFS server
+  ansible.builtin.dnf:
+    name: nfs-utils
+    state: present
+
+- name: Create NFS users directory
+  ansible.builtin.file:
+    path: "{{ nfs_users_dir }}"
+    state: directory
+    mode: "{{ nfs_mode }}"
+
+- name: Ensure NFS server is running
+  ansible.builtin.service:
+    name: nfs-server
+    state: started
+    enabled: true
+
+- name: Configure NFS exports
+  ansible.builtin.template:
+    src: "{{ nfs_exports_template }}"
+    dest: "{{ nfs_exports_dest }}"
+    owner: "{{ nfs_exports_owner }}"
+    group: "{{ nfs_exports_group }}"
+    mode: "{{ nfs_exports_mode }}"
+  notify: Reload NFS exports
+
+- name: Open NFS port in firewall
+  ansible.posix.firewalld:
+    service: nfs
+    permanent: true
+    immediate: true
+    state: enabled

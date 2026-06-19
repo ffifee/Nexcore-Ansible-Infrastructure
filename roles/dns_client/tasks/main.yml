@@ -1,0 +1,10 @@
+---
+# tasks file for dns_client
+- name: Configure NetworkManager to use internal DNS
+  ansible.builtin.template:
+    src: nexcore-client-dns.conf.j2
+    dest: /etc/NetworkManager/conf.d/nexcore-dns.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload NetworkManager

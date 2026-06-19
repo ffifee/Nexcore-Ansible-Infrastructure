@@ -1,0 +1,7 @@
+---
+# defaults file for backup
+backup_dir: /var/backups/nexcore
+backup_script: /usr/local/bin/nexcore-backup.sh
+backup_cron_hour: "1"
+backup_cron_minute: "30"
+backup_retention_days: "14"

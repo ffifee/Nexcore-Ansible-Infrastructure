@@ -1,0 +1,18 @@
+options {
+    directory "{{ dns_zone_dir }}";
+    listen-on port 53 { any; };
+    allow-query { any; };
+    recursion yes;
+    forwarders {
+        {% for forwarder in dns_forwarders %}
+        {{ forwarder }};
+        {% endfor %}
+    };
+    forward only;
+};
+
+zone "{{ domain }}" IN {
+    type master;
+    file "{{ domain }}.zone";
+    allow-update { none; };
+};

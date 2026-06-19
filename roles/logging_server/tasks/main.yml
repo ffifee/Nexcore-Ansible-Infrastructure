@@ -1,0 +1,25 @@
+---
+# tasks file for logging_server
+- name: Ensure remote log directory exists
+  ansible.builtin.file:
+    path: "{{ log_remote_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy rsyslog server config
+  ansible.builtin.template:
+    src: server.conf.j2
+    dest: /etc/rsyslog.d/10-remote-server.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart rsyslog
+
+- name: Open syslog TCP port in firewall
+  ansible.posix.firewalld:
+    port: "{{ log_remote_port }}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled

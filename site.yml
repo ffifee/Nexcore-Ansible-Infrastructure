@@ -1,0 +1,73 @@
+- name: Configure all managed servers
+  hosts: nexcore
+  become: true
+  roles:
+    - users
+    - security
+
+- name: DNS Server Configuration
+  hosts: dns
+  become: true
+  roles:
+    - dns
+
+- name: DNS Client Configuration
+  hosts: nexcore
+  become: true
+  roles:
+    - dns_client
+
+- name: Storage Configuration
+  hosts: nfs
+  become: true
+  roles:
+    - storage
+    - automount_server
+
+- name: Automount Client Configuration
+  hosts: nexcore
+  become: true
+  roles:
+    - automount
+
+- name: Database Configuration
+  hosts: db
+  become: true
+  roles:
+    - database
+
+- name: Web Configuration
+  hosts: web
+  become: true
+  roles:
+    - web
+
+- name: Email Configuration
+  hosts: mail
+  become: true
+  roles:
+    - email
+
+- name: Logging Server Configuration
+  hosts: web        # servera (servera-only group)
+  become: true
+  roles:
+    - logging_server
+
+- name: Logging Client Configuration
+  hosts: db          # serverb (serverb-only group)
+  become: true
+  roles:
+    - logging_client
+
+- name: Patching and Maintenance
+  hosts: nexcore
+  become: true
+  roles:
+    - patching
+
+- name: Database Backup
+  hosts: db
+  become: true
+  roles:
+    - backup

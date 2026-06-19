@@ -1,0 +1,24 @@
+---
+# tasks file for backup
+- name: Ensure backup directory exists
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Deploy backup script
+  ansible.builtin.template:
+    src: nexcore-backup.sh.j2
+    dest: "{{ backup_script }}"
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Schedule nightly database backup
+  ansible.builtin.cron:
+    name: "NexCore nightly database backup"
+    minute: "{{ backup_cron_minute }}"
+    hour: "{{ backup_cron_hour }}"
+    job: "{{ backup_script }}"

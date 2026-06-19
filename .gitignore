@@ -1,0 +1,6 @@
+# SSH private keys (keep the public .pub halves)
+roles/users/files/*
+!roles/users/files/*.pub
+
+# Ansible
+*.retry

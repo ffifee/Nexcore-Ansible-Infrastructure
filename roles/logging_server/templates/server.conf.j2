@@ -1,0 +1,13 @@
+# Load TCP syslog reception module
+module(load="imtcp")
+input(type="imtcp" port="{{ log_remote_port }}")
+
+# Template for per-host remote log files
+template(name="RemoteHostLog" type="string"
+         string="{{ log_remote_dir }}/%HOSTNAME%.log")
+
+# Route logs from remote hosts to per-host files
+if ($fromhost-ip != '127.0.0.1') then {
+    action(type="omfile" dynaFile="RemoteHostLog")
+    stop
+}

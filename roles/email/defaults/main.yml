@@ -1,0 +1,13 @@
+---
+# defaults file for email
+postfix_packages:
+  - postfix
+  - s-nail
+postfix_service: postfix
+
+postfix_settings:
+  myhostname: "servera.{{ domain }}"
+  mydomain: "{{ domain }}"
+  myorigin: "$mydomain"
+  inet_interfaces: "all"
+  mydestination: "$myhostname, localhost.$mydomain, localhost, $mydomain"

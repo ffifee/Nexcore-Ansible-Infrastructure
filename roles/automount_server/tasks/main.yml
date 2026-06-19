@@ -1,0 +1,10 @@
+---
+# tasks file for automount_server
+- name: Create per-user NFS subdirectories
+  ansible.builtin.file:
+    path: "{{ nfs_users_dir }}/{{ item.name }}"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.group }}"
+    mode: '0700'
+  loop: "{{ nexcore_users }}"
