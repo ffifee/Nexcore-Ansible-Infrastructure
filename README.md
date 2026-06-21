@@ -91,6 +91,7 @@ On the **control node**:
 
 - Ansible (ansible-core as shipped with RHEL/AlmaLinux 9)
 - The required collections (installed via `requirements.yml`)
+- Generate new ssh keys for users in roles/users/files (to be able to connect with specific user.)
 
 On the **managed servers** (one-time manual bootstrap — see below):
 
